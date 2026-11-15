@@ -1,7 +1,8 @@
+import os
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
-API_KEY = "admin123"
+API_KEY = os.environ.get("API_KEY")
 PATIENTS = [{"id": 1, "name": "Dummy Patient", "diagnosis": "Flu"}]
 
 @app.route("/")
@@ -10,8 +11,8 @@ def home():
 
 @app.route("/patients")
 def patients():
-    if request.headers.get("X-API-KEY") != API_KEY:
+    if not API_KEY or request.headers.get("X-API-KEY") != API_KEY:
         return jsonify(error="unauthorized"), 401
     return jsonify(PATIENTS)
 
-app.run(host="0.0.0.0", port=5000, debug=True)  # nosec B104
+app.run(host="0.0.0.0", port=5000)  # nosec B104
